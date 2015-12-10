@@ -6,6 +6,20 @@ html.wp-toolbar {
 	padding-top: 0px !important;
 }
 
+html,
+body {
+	background: transparent;
+}
+
+body {
+	display: none;
+}
+
+body.loaded {
+	display: block;
+	background: #fff;
+}
+
 #adminmenumain {
 	display: none !important;
 }
@@ -71,8 +85,7 @@ html.wp-toolbar {
 
 #submitdiv h3,
 #submitdiv .handlediv,
-#submitdiv #minor-publishing,
-#submitdiv #delete-action {
+#submitdiv #minor-publishing {
 	display: none;
 }
 

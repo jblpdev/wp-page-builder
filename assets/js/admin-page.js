@@ -7,6 +7,8 @@ $(document).ready(function() {
 
 	$('.wp-admin.post-type-page').each(function(i, element) {
 
+		var currentBlockEditModal = null
+
 		var showBlockPickerModal = function() {
 			$('.block-picker-modal').addClass('block-picker-modal-visible')
 		}
@@ -15,7 +17,8 @@ $(document).ready(function() {
 			$('.block-picker-modal').removeClass('block-picker-modal-visible')
 		}
 
-		var showBlockEditModal = function(url) {
+		var showBlockEditModal = function(url, source) {
+			currentBlockEditModal = source
 			$('.block-edit-modal').addClass('block-edit-modal-visible')
 			$('.block-edit-modal iframe').attr('src', url)
 		}
@@ -23,6 +26,8 @@ $(document).ready(function() {
 		var hideBlockEditModal = function() {
 			$('.block-edit-modal').removeClass('block-edit-modal-visible')
 			$('.block-edit-modal iframe').attr('src', '')
+			console.log('Closing ' + currentBlockEditModal)
+			currentBlockEditModal = null
 		}
 
 		var appendBlock = function(type) {
@@ -45,9 +50,11 @@ $(document).ready(function() {
 
 			block = $(block)
 			block.find('.page-block-edit a').on('click', function(e) {
+
 				e.preventDefault()
 				e.stopPropagation()
-				showBlockEditModal($(this).attr('href'))
+
+				showBlockEditModal($(this).attr('href'), $(this).closest('.page-block').find('input[name="_page_blocks_id[]"]').val())
 			})
 
 			return block
@@ -75,6 +82,8 @@ $(document).ready(function() {
 
 			hideBlockPickerModal()
 		})
+
+		window.wpbHideBlockEditModal = hideBlockEditModal
 	})
 })
 

@@ -116,6 +116,14 @@ add_action('admin_init', function() {
 		$data['block_page'] = $_REQUEST['block_page'];
 		Timber::render('block-edit.twig', $data);
 
+		if ($block_saved) {
+			?>
+			<script type="text/javascript">
+				alert('WAT');
+			</script>
+			<?php
+		}
+
 	}, 'block', 'normal', 'high');
 
 	/**
@@ -142,6 +150,7 @@ add_action('admin_enqueue_scripts', function() {
 	}
 
 	if (get_post_type() == 'block') {
+		wp_enqueue_script('wpb_admin_page_js', WPB_URL . 'assets/js/admin-block.js', false, WPB_VERSION);
 		wp_enqueue_style('wpb_admin_block_css', WPB_URL . 'assets/css/admin-block.css', false, WPB_VERSION);
 	}
 });
@@ -194,9 +203,23 @@ add_action('save_post', function($post_id, $post) {
 		update_post_meta($post_id, '_page_blocks', $page_blocks_new);
 	}
 
+	/*
+	if (get_post_type() == 'block') {
+
+	}
+	*/
+
 	return $post_id;
 
 }, 10, 2);
+
+/**
+ * @action delete_post
+ * @since 0.1.0
+ */
+add_action('delete_post', function($post_id) {
+
+}, 10);
 
 /**
  * @filter redirect_post_location
@@ -206,7 +229,7 @@ add_filter('redirect_post_location', function($location, $post_id) {
 
 	switch (get_post_type()) {
 		case 'block':
-			$location = $location . sprintf('&block_id=%s&block_page=%s', $_REQUEST['block_id'], $_REQUEST['block_page']);
+			$location = $location . sprintf('&block_id=%s&block_page=%s#block_saved', $_REQUEST['block_id'], $_REQUEST['block_page']);
 			break;
 	}
 
@@ -262,8 +285,6 @@ add_action('wp_ajax_add_page_block', function() {
 	$data = Timber::get_context();
 	$data['page_block'] = $page_block;
 	Timber::render('block-list-item.twig', $data);
-
-	exit;
 });
 
 /**
