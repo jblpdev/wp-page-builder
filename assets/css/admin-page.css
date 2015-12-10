@@ -13,29 +13,41 @@
    Page Blocks
    ========================================================================== */
 
-.page-block {
-	background: #dedede;
-	margin: 0px;
-	margin-bottom: 5px;
-	position: relative;
+.page-blocks {
+
 }
 
-.page-block-sort {
-	background: url(../images/sort.png) no-repeat center center;
+.page-block {
+	background: #fff url(../images/sort.png) no-repeat center left;
+	border: 1px solid #dedede;
 	cursor: move;
-	float: left;
-	height: 40px;
-	width: 40px;
+	margin: 0px;
+	margin-bottom: 5px;
+	padding: 0px;
+	padding-left: 30px;
+	position: relative;
+	width: auto;
 }
 
 .page-block-text {
+	overflow: hidden;
 	padding: 10px;
 }
 
+.page-block-name {
+	font-size: 14px;
+	margin: 0px;
+	margin-bottom: 3px;
+}
+
+.page-block-desc {
+	font-size: 12px;
+	opacity: 0.9;
+}
+
 .page-block-edit {
-	position: absolute;
-	right: 10px;
-	top: 6px;
+	float: right;
+	padding: 10px;
 }
 
 /* ==========================================================================

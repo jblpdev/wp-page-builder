@@ -32,11 +32,21 @@ class Block
 	/**
 	 * Renders the block.
 	 * @method render
-	 * @since 0.1.0
+	 * @since 0.2.0
 	 */
-	public function summary($block_post)
+	public function name($block_post)
 	{
-		return '';
+		return $this->infos['name'];
+	}
+
+	/**
+	 * Renders the block.
+	 * @method description
+	 * @since 0.2.0
+	 */
+	public function description($block_post)
+	{
+		return $this->infos['description'];
 	}
 
 	/**

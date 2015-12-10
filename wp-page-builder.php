@@ -412,12 +412,35 @@ function wpb_block_template_by_type($block_template)
 }
 
 /**
- * @function wpb_block_summary
- * @since 0.1.0
+ * @function wpb_block_name
+ * @since 0.2.0
  */
-function wpb_block_summary($block_template_type, $block_post)
+function wpb_block_name($block_template_type, $block_post)
 {
-	return wpb_block_instance($block_template_type)->summary($block_post);
+	return wpb_block_instance($block_template_type)->name($block_post);
+}
+
+/**
+ * @function wpb_block_description
+ * @since 0.2.0
+ */
+function wpb_block_description($block_template_type, $block_post)
+{
+	return wpb_block_instance($block_template_type)->description($block_post);
+}
+
+/**
+ * @function wpb_block_overview
+ * @since 0.2.0
+ */
+function wpb_block_overview($block_template_type)
+{
+	$block_template = wpb_block_template_by_type($block_template_type);
+	if ($block_template == null) {
+		return;
+	}
+
+	echo file_get_contents($block_template['path'] . '/' . $block_template['overview_file']);
 }
 
 /**

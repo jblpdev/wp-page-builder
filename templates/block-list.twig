@@ -1,17 +1,17 @@
 <input type="hidden" name="_page_blocks_changed" value="false">
 
+<div class="button block-picker-modal-show">Add block</div>
+
 <ul class="page-blocks">
 	{% for page_block in page_blocks %}
 		{% include 'block-list-item.twig' %}
 	{% endfor %}
 </ul>
 
-<div class="button button-hero block-picker-modal-show">Add block</div>
-
 <div class="block-picker-modal">
 	<div class="block-picker-modal-frame">
 		<div class="block-picker-modal-header">
-			<h1>Select block template</h1>
+			<h1>Insert Block</h1>
 			<button type="button" class="button-link media-modal-close block-picker-modal-hide"><span class="media-modal-icon"><span class="screen-reader-text">Close media panel</span></span></button>
 		</div>
 		<div class="block-picker-modal-content">
@@ -25,8 +25,7 @@
 							</div>
 							<div class="block-template-info-layout">
 								<div class="block-template-info-layout-frame">
-									<div class="layout-zone layout-zone-1">Carousel</div>
-									<div class="layout-zone layout-zone-2">Content</div>
+									{{ function('wpb_block_overview', block_template_info.type) }}
 								</div>
 							</div>
 							<div class="block-template-info-action">
@@ -43,7 +42,7 @@
 <div class="block-edit-modal">
 	<div class="block-edit-modal-frame">
 		<div class="block-edit-modal-header">
-			<h1>Lorem Ipsum</h1>
+			<h1>Edit Block</h1>
 			<button type="button" class="button-link media-modal-close block-edit-modal-hide"><span class="media-modal-icon"><span class="screen-reader-text">Close media panel</span></span></button>
 		</div>
 		<div class="block-edit-modal-content">
