@@ -34,7 +34,7 @@ $(document).ready(function() {
 
 			$.post(ajaxurl, {
 				'action': 'add_page_block',
-				'block_post': post,
+				'block_page': post,
 				'block_template': type,
 			}, function(result) {
 				$('.page-blocks').append(setupBlock(result))
