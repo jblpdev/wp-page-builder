@@ -1,0 +1,116 @@
+/* ==========================================================================
+   Admin
+   ========================================================================== */
+
+html.wp-toolbar {
+	padding-top: 0px !important;
+}
+
+#adminmenumain {
+	display: none !important;
+}
+
+#wpadminbar {
+	display: none !important;
+}
+
+#screen-meta,
+#screen-meta-links {
+	display: none !important;
+}
+
+#update-nag, .update-nag {
+	display: none !important;
+}
+
+#wpheader,
+#wpfooter,
+#wpcontent {
+	margin-left: 0px !important;
+}
+
+#wpfooter {
+	display: none !important;
+}
+
+#message {
+	display: none !important;
+}
+
+#post-body-content {
+	display: none !important;
+}
+
+#poststuff {
+	margin-top: 0px;
+}
+
+#poststuff .postbox-container {
+	float: none !important;
+	margin: 0px !important;
+	padding: 0px !important;
+	width: auto !important;
+}
+
+#poststuff #post-body {
+	margin: 0px !important;
+}
+
+#postbox-container-1 {
+	display: none !important;
+}
+
+#submitdiv {
+	box-shadow: none;
+	margin-bottom: 0px;
+	bottom: 0px;
+	right: 0px;
+	left: 0px;
+	position: fixed;
+}
+
+#submitdiv h3,
+#submitdiv .handlediv,
+#submitdiv #minor-publishing,
+#submitdiv #delete-action {
+	display: none;
+}
+
+#submitdiv #major-publishing-actions {
+	border: none;
+	background: #fff;
+}
+
+
+/*
+#postbox-container-1 h3,
+#postbox-container-1 .handlediv,
+#postbox-container-1 #minor-publishing,
+#postbox-container-1 #minor-publishing-actions,
+#postbox-container-1 #misc-publishing-actions,
+#postbox-container-1 #major-publishing-actions #delete-action {
+	display: none !important;
+}
+
+#postbox-container-1 .postbox {
+	box-shadow: none;
+}
+
+#postbox-container-1 #major-publishing-actions {
+	border: none !important;
+	background: #fff;
+}
+
+#postbox-container-1 .meta-box-sortables {
+	min-height: 0 !important;
+	width: 100% !important;
+}
+
+#postbox-contaienr-1 .inside {
+	border: none;
+}
+*/
+
+h1 {
+	display: none;
+}

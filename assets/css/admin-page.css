@@ -1,0 +1,243 @@
+.postbox.seamless {
+	border: 0 none;
+    background: transparent;
+    box-shadow: none;
+    box-sizing: border-box;
+}
+
+.postbox.seamless .inside {
+	margin: 0px !important;
+}
+
+/* ==========================================================================
+   Page Blocks
+   ========================================================================== */
+
+.page-block {
+	background: #dedede;
+	margin: 0px;
+	margin-bottom: 5px;
+	position: relative;
+}
+
+.page-block-sort {
+	background: url(../images/sort.png) no-repeat center center;
+	cursor: move;
+	float: left;
+	height: 40px;
+	width: 40px;
+}
+
+.page-block-text {
+	padding: 10px;
+}
+
+.page-block-edit {
+	position: absolute;
+	right: 10px;
+	top: 6px;
+}
+
+/* ==========================================================================
+   Block Picker Modal
+   ========================================================================== */
+
+.block-picker-modal {
+	background: rgba(0, 0, 0, 0.7);
+	bottom: 0px;
+	left: 0px;
+	position: fixed;
+	visibility: hidden;
+	right: 0px;
+	top: 0px;
+	z-index: 100050;
+}
+
+.block-picker-modal.block-picker-modal-visible {
+	visibility: visible;
+}
+
+.block-picker-modal-frame {
+	background: #fff;
+	bottom: 30px;
+	left: 30px;
+	position: absolute;
+	top: 30px;
+	right: 30px;
+}
+
+.block-picker-modal-header {
+	box-sizing: border-box;
+	background: #fafafa;
+	border-bottom: 1px solid #dedede;
+	height: 60px;
+	padding-left: 30px;
+	padding-right: 30px;
+}
+
+.block-picker-modal-header h1 {
+	height: 60px;
+	line-height: 60px;
+	margin: 0px !important;
+	padding: 0px !important;
+}
+
+.block-picker-modal-content {
+	bottom: 0px;
+	left: 0px;
+	position: absolute;
+	padding: 30px;
+	right: 0px;
+	top: 60px;
+}
+
+/* ==========================================================================
+   Block Templates
+   ========================================================================== */
+
+.block-template-info-list {
+	margin-left: -15px;
+	margin-right: -15px;
+}
+
+.block-template-info-cell {
+	box-sizing: border-box;
+	float: left;
+	padding-left: 15px;
+	parring-right: 15px;
+	padding-bottom: 15px;
+	width: 33.3333%;
+}
+
+.block-template-info {
+	border: 1px solid #dedede;
+	background: #fff;
+	font-size: 14px;
+	font-weight: normal;
+}
+
+.block-template-info-header {
+	background: #fafafa;
+	border-bottom: 1px solid #dedede;
+	padding: 10px;
+}
+
+.block-template-info-name {
+	font-size: 16px;
+}
+
+.block-template-info-desc {
+	font-size: 13px;
+	margin: 0px;
+	margin-top: 5px;
+}
+
+.block-template-info-layout {
+	padding: 5px;
+}
+
+.block-template-info-layout-frame {
+	border: 1px solid #d6dbdd;
+	box-sizing: border-box;
+}
+
+.block-template-info-action {
+	background: #fafafa;
+	border-top: 1px solid #dedede;
+	padding: 10px;
+	text-align: right;
+}
+
+/* ==========================================================================
+   Block Layout
+   ========================================================================== */
+
+.layout-zone {
+	color: rgba(0, 0, 0, 0.5);
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	padding: 10px;
+}
+
+.layout-zone-1 {
+	background: #f7fcfd;
+	padding-top: 30px;
+	padding-bottom: 30px;
+}
+
+.layout-zone-2 {
+	background: #f2f7f9;
+	border-top: 1px solid #d6dbdd;
+}
+
+/* ==========================================================================
+   Base
+   ========================================================================== */
+
+.clearfix:after {
+     visibility: hidden;
+     display: block;
+     font-size: 0;
+     content: " ";
+     clear: both;
+     height: 0;
+     }
+.clearfix { display: inline-block; }
+/* start commented backslash hack \*/
+* html .clearfix { height: 1%; }
+.clearfix { display: block; }
+/* close commented backslash hack */
+
+/* ==========================================================================
+   Block Edit Modal
+   ========================================================================== */
+
+.block-edit-modal {
+	background: rgba(0, 0, 0, 0.7);
+	bottom: 0px;
+	left: 0px;
+	position: fixed;
+	visibility: hidden;
+	right: 0px;
+	top: 0px;
+	z-index: 100050;
+}
+
+.block-edit-modal.block-edit-modal-visible {
+	visibility: visible;
+}
+
+.block-edit-modal-frame {
+	background: #fff url(../images/loader.gif) no-repeat center center;
+	bottom: 30px;
+	left: 30px;
+	position: absolute;
+	top: 30px;
+	right: 30px;
+}
+
+.block-edit-modal-header {
+	box-sizing: border-box;
+	background: #fafafa;
+	border-bottom: 1px solid #dedede;
+	height: 60px;
+	padding-left: 30px;
+	padding-right: 30px;
+}
+
+.block-edit-modal-header h1 {
+	height: 60px;
+	line-height: 60px;
+	margin: 0px !important;
+	padding: 0px !important;
+}
+
+.block-edit-modal-content {
+	bottom: 0px;
+	left: 0px;
+	position: absolute;
+	padding: 0px;
+	right: 0px;
+	top: 60px;
+}
