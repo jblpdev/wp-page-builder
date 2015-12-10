@@ -17,7 +17,7 @@ define('WPB_FILE', __FILE__);
 define('WPB_DIR', plugin_dir_path(WPB_FILE));
 define('WPB_URL', plugins_url('/', WPB_FILE));
 
-require WP_CONTENT_DIR . '/plugins/wp-page-builder/Block.php';
+require_once WP_CONTENT_DIR . '/plugins/wp-page-builder/Block.php';
 
 Timber::$locations = array(WPB_DIR . 'templates/');
 
@@ -248,25 +248,20 @@ add_action('wp_ajax_add_page_block', function() {
 
 	$block_id = uniqid();
 
-	$page_blocks[] = array(
+	$page_block = array(
 		'block_id' => $block_id,
 		'block_post' => $block_post,
 		'block_page' => $block_page,
 		'block_template' => $block_template
 	);
 
+	$page_blocks[] = $page_block;
+
 	update_post_meta($block_page, '_page_blocks', $page_blocks);
 
-	?>
-		<li class="page-block clearfix">
-			<input type="hidden" name="_page_blocks_id[]" value="<?php echo $block_id ?>">
-			<div class="page-block-sort"></div>
-			<div class="page-block-text"><?php echo $block_id ?>:<?php echo $block_template ?></div>
-			<div class="page-block-edit">
-				<a href="<?php echo admin_url('post.php?&post=' . $block_post . '&action=edit&block_page=' . $block_page . '&block_id=' . $block_id) ?>" class="button">Edit</a>
-			</div>
-		</li>
-	<?php
+	$data = Timber::get_context();
+	$data['page_block'] = $page_block;
+	Timber::render('block-list-item.twig', $data);
 
 	exit;
 });
@@ -417,6 +412,50 @@ function wpb_block_template_by_type($block_template)
 }
 
 /**
+ * @function wpb_block_summary
+ * @since 0.1.0
+ */
+function wpb_block_summary($block_template_type, $block_post)
+{
+	return wpb_block_instance($block_template_type)->summary($block_post);
+}
+
+/**
+ * @function wpb_block_instance
+ * @since 0.1.0
+ */
+function wpb_block_instance($block_template_type)
+{
+	static $instances = array();
+
+	$block_instance = isset($instances[$block_template_type]) ? $instances[$block_template_type] : null;
+
+	if ($block_instance == null) {
+
+		$block_template = wpb_block_template_by_type($block_template_type);
+
+		if ($block_template == null) {
+			return null;
+		}
+
+		$block_class_file = isset($block_template['block_class_file']) ? $block_template['block_class_file'] : null;
+		$block_class_name = isset($block_template['block_class_name']) ? $block_template['block_class_name'] : null;
+		$block_class_instance = null;
+
+		if ($block_class_file && $block_class_name) {
+			require_once $block_template['path'] . '/' . $block_class_file;
+			$block_instance = new $block_class_name($block_template);
+		} else {
+			$block_instance = new WPPageBuilder\Block\Block($block_template);
+		}
+
+		$instances[$block_template_type] = $block_instance;
+	}
+
+	return $block_instance;
+}
+
+/**
  * @function wpb_build
  * @since 0.1.0
  */
@@ -432,35 +471,25 @@ function wpb_build($page_id = null)
 
 		if (!isset($page_block['block_id']) ||
 			!isset($page_block['block_page']) ||
-			!isset($page_block['block_post'])) {
+			!isset($page_block['block_post']) ||
+			!isset($page_block['block_template'])) {
 			continue;
 		}
 
-		$block_template = wpb_block_template_by_type($page_block['block_template']);
+		$block_id = $page_block['block_id'];
+		$block_page = $page_block['block_page'];
+		$block_post = $page_block['block_post'];
+		$block_template = $page_block['block_template'];
 
-		if ($block_template == null) {
-			continue;
-		}
-
-		$block_class_file = isset($block_template['block_class_file']) ? $block_template['block_class_file'] : null;
-		$block_class_name = isset($block_template['block_class_name']) ? $block_template['block_class_name'] : null;
-		$block_class_instance = null;
-
-		if ($block_class_file && $block_class_name) {
-			require_once $block_template['path'] . '/' . $block_class_file;
-			$block_instance = new $block_class_name;
-		} else {
-			$block_instance = new WPPageBuilder\Block\Block();
-		}
-
-		$post = get_post($page_block['block_post']);
-
-		setup_postdata($post);
 		$locations = \Timber::$locations;
-		$block_instance->render($post, $block_template);
-		wp_reset_postdata();
+
+		if ($block_instance = wpb_block_instance($block_template)) {
+			$block_instance->render(
+				$block_post,
+				$block_page
+			);
+		}
 
 		\Timber::$locations = $locations;
 	}
 }
-
