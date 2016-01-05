@@ -7,7 +7,7 @@ use TimberPost;
 class Block
 {
 	//--------------------------------------------------------------------------
-	// Methods
+	// Fields
 	//--------------------------------------------------------------------------
 
 	public $infos = array();
@@ -23,10 +23,11 @@ class Block
 	public function __construct($infos)
 	{
 		$this->infos = $infos;
+		$this->infos['outline_file'] = isset($infos['outline_file']) ? $infos['outline_file'] : 'outline.twig';
+		$this->infos['preview_file'] = isset($infos['preview_file']) ? $infos['preview_file'] : 'preview.twig';
 		$this->infos['template_file'] = isset($infos['template_file']) ? $infos['template_file'] : 'block.twig';
-		$this->infos['overview_file'] = isset($infos['overview_file']) ? $infos['overview_file'] : null;
-		$this->infos['block_class_file'] = isset($infos['block_class_file']) ? $infos['block_class_file'] : null;
-		$this->infos['block_class_name'] = isset($infos['block_class_name']) ? $infos['block_class_name'] : null;
+		$this->infos['class_file'] = isset($infos['class_file']) ? $infos['class_file'] : null;
+		$this->infos['class_name'] = isset($infos['class_name']) ? $infos['class_name'] : null;
 	}
 
 	/**
@@ -70,29 +71,41 @@ class Block
 	}
 
 	/**
-	 * Returns the block preview from within the admin.
-	 * @method preview
+	 * Renders the outline template.
+	 * @method render_outline
 	 * @since 0.1.0
 	 */
-	public function preview($block_post, $block_page)
+	public function render_outline()
 	{
-		$this->render_template($this->infos['preview_file'], array(
-			'page'  => new TimberPost($block_page),
-			'block' => new TimberPost($block_post)
-		));
+		$this->render($this->infos['outline_file'], Timber::get_context());
 	}
 
 	/**
-	 * Renders the block.
-	 * @method render
+	 * Renders the block preview template.
+	 * @method render_preview
 	 * @since 0.1.0
 	 */
-	public function render($block_post, $block_page)
+	public function render_preview($block_page, $block_post, $block_id)
 	{
-		$this->render_template($this->infos['template_file'], array(
-			'page'  => new TimberPost($block_page),
-			'block' => new TimberPost($block_post)
-		));
+		$context = Timber::get_context();
+		$context['page']  = new TimberPost($block_page);
+		$context['block'] = new TimberPost($block_post);
+		$context['block_id'] = $block_id;
+		$this->render($this->infos['preview_file'], $context);
+	}
+
+	/**
+	 * Renders teh block template.
+	 * @method render_template
+	 * @since 0.1.0
+	 */
+	public function render_template($block_page, $block_post, $block_id)
+	{
+		$context = Timber::get_context();
+		$context['page']  = new TimberPost($block_page);
+		$context['block'] = new TimberPost($block_post);
+		$context['block_id'] = $block_id;
+		$this->render($this->infos['template_file'], $context);
 	}
 
 	/**
@@ -100,20 +113,31 @@ class Block
 	 * @method render
 	 * @since 0.1.0
 	 */
-	public function render_template($template, array $data = array())
+	public function render($template, $context)
 	{
-
-		Timber::$locations = array($this->infos['path']);
-
-		$context = Timber::get_context();
-
-		foreach ($data as $key => $val) {
-			$context[$key] = $val;
-		}
-
 		$this->on_render($template, $context);
 
+		$locations = \Timber::$locations;
+
+		Timber::$locations = array_merge(Timber::$locations , $this->get_render_location());
+
+		$context['block_buid'] = $this->infos['buid'];
+		$context['block_name'] = $this->infos['name'];
+		$context['block_description'] = $this->infos['description'];
+
 		Timber::render($template, $context);
+
+		Timber::$locations = $locations;
+	}
+
+	/**
+	 * Returns the template locations.
+	 * @method get_render_location
+	 * @since 0.1.0
+	 */
+	public function get_render_location()
+	{
+		return array($this->infos['path']);
 	}
 
 	//--------------------------------------------------------------------------

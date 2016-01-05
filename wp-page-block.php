@@ -460,9 +460,9 @@ function wpb_block_template_by_buid($block_buid)
  * @function wpb_block_name
  * @since 0.1.0
  */
-function wpb_block_name($block_template_buid)
+function wpb_block_name($block_buid)
 {
-	return wpb_block_instance($block_template_buid)->name();
+	return wpb_block_instance($block_buid)->name();
 }
 
 /**
@@ -470,19 +470,9 @@ function wpb_block_name($block_template_buid)
  * @function wpb_block_description
  * @since 0.1.0
  */
-function wpb_block_description($block_template_buid)
+function wpb_block_description($block_buid)
 {
-	return wpb_block_instance($block_template_buid)->description();
-}
-
-/**
- * Returns the block preview for a specific page within the admin.
- * @function wpb_block_preview
- * @since 0.1.0
- */
-function wpb_block_preview($block_template_buid, $block_post, $block_page)
-{
-	return wpb_block_instance($block_template_buid)->preview($block_post, $block_page);
+	return wpb_block_instance($block_buid)->description();
 }
 
 /**
@@ -490,9 +480,9 @@ function wpb_block_preview($block_template_buid, $block_post, $block_page)
  * @function wpb_block_is_editable
  * @since 0.1.0
  */
-function wpb_block_is_editable($block_template_buid, $block_post)
+function wpb_block_is_editable($block_buid, $block_post)
 {
-	return wpb_block_instance($block_template_buid)->is_editable($block_post);
+	return wpb_block_instance($block_buid)->is_editable($block_post);
 }
 
 /**
@@ -500,59 +490,66 @@ function wpb_block_is_editable($block_template_buid, $block_post)
  * @function wpb_block_is_deletable
  * @since 0.1.0
  */
-function wpb_block_is_deletable($block_template_buid, $block_post)
+function wpb_block_is_deletable($block_buid, $block_post)
 {
-	return wpb_block_instance($block_template_buid)->is_deletable($block_post);
+	return wpb_block_instance($block_buid)->is_deletable($block_post);
 }
 
 /**
- * @function wpb_block_overview
+ * @function wpb_block_render_outline
  * @since 0.1.0
  */
-function wpb_block_overview($block_template_buid)
+function wpb_block_render_outline($block_buid)
 {
-	$block_template = wpb_block_template_by_buid($block_template_buid);
-	if ($block_template == null) {
-		echo 'Unavailable';
-		return;
-	}
+	wpb_block_instance($block_buid)->render_outline();
+}
 
-	echo file_get_contents($block_template['path'] . '/' . $block_template['overview_file']);
+/**
+ * @function wpb_block_render_preview
+ * @since 0.1.0
+ */
+function wpb_block_render_preview($block_buid, $block_page, $block_post, $block_id)
+{
+	wpb_block_instance($block_buid)->render_preview($block_page, $block_post, $block_id);
+}
+
+/**
+ * @function wpb_block_render_template
+ * @since 0.1.0
+ */
+function wpb_block_render_template($block_buid, $block_page, $block_post, $block_id)
+{
+	wpb_block_instance($block_buid)->render_template($block_page, $block_post, $block_id);
 }
 
 /**
  * @function wpb_block_instance
  * @since 0.1.0
  */
-function wpb_block_instance($block_template_buid)
+function wpb_block_instance($block_buid)
 {
 	static $instances = array();
 
-	$block_instance = isset($instances[$block_template_buid]) ? $instances[$block_template_buid] : null;
+	$instance = isset($instances[$block_buid]) ? $instances[$block_buid] : null;
 
-	if ($block_instance == null) {
+	if ($instance == null) {
 
-		$block_template = wpb_block_template_by_buid($block_template_buid);
-
+		$block_template = wpb_block_template_by_buid($block_buid);
 		if ($block_template == null) {
 			return null;
 		}
 
-		$block_class_file = isset($block_template['block_class_file']) ? $block_template['block_class_file'] : null;
-		$block_class_name = isset($block_template['block_class_name']) ? $block_template['block_class_name'] : null;
-		$block_class_instance = null;
+		$class_file = isset($block_template['class_file']) ? $block_template['class_file'] : null;
+		$class_name = isset($block_template['class_name']) ? $block_template['class_name'] : null;
 
-		if ($block_class_file && $block_class_name) {
-			require_once $block_template['path'] . '/' . $block_class_file;
-			$block_instance = new $block_class_name($block_template);
-		} else {
-			$block_instance = new WPPageBlock\Block\Block($block_template);
-		}
+		require_once $block_template['path'] . '/' . $class_file;
 
-		$instances[$block_template_buid] = $block_instance;
+		$instance = new $class_name($block_template);
+
+		$instances[$block_buid] = $instance;
 	}
 
-	return $block_instance;
+	return $instance;
 }
 
 /**
@@ -562,11 +559,8 @@ function wpb_block_instance($block_template_buid)
 function wpb_page_has_blocks($page_id = null)
 {
 	global $post;
-
 	$page = get_post($page_id);
-
 	$page_blocks = get_post_meta($page->ID, '_page_blocks', true);
-
 	return $page_blocks && count($page_blocks);
 }
 
@@ -591,20 +585,11 @@ function wpb_build($page_id = null)
 			continue;
 		}
 
-		$block_id = $page_block['block_id'];
+		$block_id   = $page_block['block_id'];
 		$block_page = $page_block['block_page'];
 		$block_post = $page_block['block_post'];
 		$block_buid = $page_block['block_buid'];
 
-		$locations = \Timber::$locations;
-
-		if ($block_instance = wpb_block_instance($block_buid)) {
-			$block_instance->render(
-				$block_post,
-				$block_page
-			);
-		}
-
-		\Timber::$locations = $locations;
+		wpb_block_render_template($block_buid, $block_page, $block_post, $block_id);
 	}
 }
