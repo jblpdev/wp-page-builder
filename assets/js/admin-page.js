@@ -41,27 +41,27 @@ $(document).ready(function() {
 				'block_page': post,
 				'block_buid': buid,
 			}, function(result) {
-				$('.page-blocks').append(setupBlock(result))
+				$('.blocks').append(setupBlock(result))
 			})
 		}
 
 		var setupBlock = function(block) {
 
 			block = $(block)
-			block.find('.page-block-edit a').on('click', function(e) {
+			block.find('.block-edit a').on('click', function(e) {
 
 				e.preventDefault()
 				e.stopPropagation()
 
-				showBlockEditModal($(this).attr('href'), $(this).closest('.page-block').find('input[name="_page_blocks_id[]"]').val())
+				showBlockEditModal($(this).attr('href'), $(this).closest('.block').find('input[name="_page_blocks_id[]"]').val())
 			})
 
 			return block
 		}
 
-		$('.page-blocks').disableSelection();
-		$('.page-blocks').sortable()
-		$('.page-blocks').each(function(i, element) {
+		$('.blocks').disableSelection();
+		$('.blocks').sortable()
+		$('.blocks').each(function(i, element) {
 			setupBlock(element)
 		})
 

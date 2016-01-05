@@ -10,14 +10,14 @@
 }
 
 /* ==========================================================================
-   Page Blocks
+   Blocks
    ========================================================================== */
 
-.page-blocks {
+.blocks {
 
 }
 
-.page-block {
+.block {
 	background: #fff url(../images/sort.png) no-repeat center left;
 	border: 1px solid #dedede;
 	cursor: move;
@@ -29,23 +29,23 @@
 	width: auto;
 }
 
-.page-block-text {
+.block-text {
 	overflow: hidden;
 	padding: 10px;
 }
 
-.page-block-name {
+.block-name {
 	font-size: 14px;
 	margin: 0px;
 	margin-bottom: 3px;
 }
 
-.page-block-description {
+.block-description {
 	font-size: 12px;
 	opacity: 0.9;
 }
 
-.page-block-edit {
+.block-edit {
 	float: right;
 	padding: 10px;
 }

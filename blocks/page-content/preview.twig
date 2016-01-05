@@ -2,10 +2,10 @@
 
 {% block preview %}
 
-	<div class="page-block-text">
-		<div class="page-block-name">{{ block_name }}</div>
-		<div class="page-block-description">{{ block_description }}</div>
-		<div class="page-block-preview">
+	<div class="block-text">
+		<div class="block-name">{{ block_name }}</div>
+		<div class="block-description">{{ block_description }}</div>
+		<div class="block-preview">
 			{{ page.get_preview(40, false, false) }}
 		</div>
 	</div>
