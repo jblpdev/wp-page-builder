@@ -29,7 +29,7 @@ $(document).ready(function() {
 			currentBlockEditModal = null
 		}
 
-		var appendBlock = function(type) {
+		var appendBlock = function(buid) {
 
 			var post = $('#post_ID').val()
 			if (post == null)  {
@@ -39,7 +39,7 @@ $(document).ready(function() {
 			$.post(ajaxurl, {
 				'action': 'add_page_block',
 				'block_page': post,
-				'block_template': type,
+				'block_buid': buid,
 			}, function(result) {
 				$('.page-blocks').append(setupBlock(result))
 			})
@@ -71,13 +71,13 @@ $(document).ready(function() {
 
 		$('.block-template-info-action .button-insert').on('click', function() {
 
-			var type = $(this).closest('.block-template-info').attr('data-block-template')
-			if (type == null) {
+			var buid = $(this).closest('.block-template-info').attr('data-block-buid')
+			if (buid == null) {
 				hideBlockPickerModal()
 				return
 			}
 
-			appendBlock(type)
+			appendBlock(buid)
 
 			hideBlockPickerModal()
 		})

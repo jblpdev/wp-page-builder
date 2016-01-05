@@ -1,8 +1,15 @@
 <li class="page-block clearfix">
+
 	<input type="hidden" name="_page_blocks_id[]" value="{{page_block.block_id}}">
-	<div class="page-block-edit"><a href="{{ function('admin_url', 'post.php?&post=' ~ page_block.block_post ~ '&action=edit&block_page=' ~ page_block.block_page ~ '&block_id=' ~ page_block.block_id) }}" class="button">Edit</a></div><div class="page-block-text">
-		<div class="page-block-name">{{ function('wpb_block_name', page_block.block_template) }}</div>
-		<div class="page-block-desc">{{ function('wpb_block_description', page_block.block_template) }}</div>
-		<div class="page-block-preview">{{ function('wpb_block_preview', page_block.block_template, page_block.block_post) }}</div>
+
+	{% if function('wpb_block_is_editable', page_block.block_buid, page_block.block_post) %}
+		<div class="page-block-edit"><a href="{{ function('admin_url', 'post.php?&post=' ~ page_block.block_post ~ '&action=edit&block_page=' ~ page_block.block_page ~ '&block_id=' ~ page_block.block_id) }}" class="button">Edit</a></div>
+	{% endif %}
+
+	<div class="page-block-text">
+		<div class="page-block-name">{{ function('wpb_block_name', page_block.block_buid) }}</div>
+		<div class="page-block-description">{{ function('wpb_block_description', page_block.block_buid) }}</div>
+		<div class="page-block-preview">{{ function('wpb_block_preview', page_block.block_buid, page_block.block_post, page_block.block_page) }}</div>
 	</div>
+
 </li>

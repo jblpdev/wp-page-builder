@@ -40,7 +40,7 @@
 	margin-bottom: 3px;
 }
 
-.page-block-desc {
+.page-block-description {
 	font-size: 12px;
 	opacity: 0.9;
 }
@@ -151,6 +151,12 @@
 .block-template-info-layout-frame {
 	border: 1px solid #d6dbdd;
 	box-sizing: border-box;
+	display: flex;
+	height: 140px;
+}
+
+.block-template-info-layout-frame > * {
+	box-sizing: border-box;
 }
 
 .block-template-info-action {
@@ -174,13 +180,12 @@
 
 .layout-zone-1 {
 	background: #f7fcfd;
-	padding-top: 30px;
-	padding-bottom: 30px;
+	flex: 1 0 0;
 }
 
 .layout-zone-2 {
 	background: #f2f7f9;
-	border-top: 1px solid #d6dbdd;
+	flex: 1 0 0;
 }
 
 /* ==========================================================================

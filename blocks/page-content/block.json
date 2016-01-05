@@ -1,0 +1,9 @@
+{
+	"name": "Page Content",
+	"description": "Displays the content of a page within a specified block.",
+	"template_file": "block.twig",
+	"preview_file": "preview.twig",
+	"overview_file": "overview.html",
+	"block_class_file": "block.php",
+	"block_class_name": "WPPageBlock\\PageContentBlock"
+}

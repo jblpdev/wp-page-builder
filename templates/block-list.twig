@@ -18,14 +18,14 @@
 			<div class="block-template-info-list">
 				{% for block_template_info in block_template_infos %}
 					<div class="block-template-info-cell">
-						<div class="block-template-info" data-block-template="{{block_template_info.type}}">
+						<div class="block-template-info" data-block-buid="{{block_template_info.buid}}">
 							<div class="block-template-info-header">
 								<div class="block-template-info-name">{{block_template_info.name}}</div>
 								<div class="block-template-info-desc">{{block_template_info.description}}</div>
 							</div>
 							<div class="block-template-info-layout">
 								<div class="block-template-info-layout-frame">
-									{{ function('wpb_block_overview', block_template_info.type) }}
+									{{ function('wpb_block_overview', block_template_info.buid) }}
 								</div>
 							</div>
 							<div class="block-template-info-action">

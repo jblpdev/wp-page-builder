@@ -1,5 +1,5 @@
 <?php
-namespace WPPageBuilder;
+namespace WPPageBlock;
 
 use Timber;
 use TimberPost;
@@ -50,13 +50,36 @@ class Block
 	}
 
 	/**
+	 * Returns whether this block can be edited.
+	 * @method is_editable
+	 * @since 0.1.0
+	 */
+	public function is_editable($block_post)
+	{
+		return true;
+	}
+
+	/**
+	 * Returns whether this block can be deleted.
+	 * @method is_deletable
+	 * @since 0.1.0
+	 */
+	public function is_deletable($block_post)
+	{
+		return true;
+	}
+
+	/**
 	 * Returns the block preview from within the admin.
 	 * @method preview
 	 * @since 0.1.0
 	 */
-	public function preview($block_post)
+	public function preview($block_post, $block_page)
 	{
-
+		$this->render_template($this->infos['preview_file'], array(
+			'page'  => new TimberPost($block_page),
+			'block' => new TimberPost($block_post)
+		));
 	}
 
 	/**
@@ -79,15 +102,17 @@ class Block
 	 */
 	public function render_template($template, array $data = array())
 	{
+
+		Timber::$locations = array($this->infos['path']);
+
 		$context = Timber::get_context();
 
 		foreach ($data as $key => $val) {
 			$context[$key] = $val;
 		}
 
-		$this->on_render($template, $data);
+		$this->on_render($template, $context);
 
-		Timber::$locations = array($this->infos['path']);
 		Timber::render($template, $context);
 	}
 
@@ -100,7 +125,8 @@ class Block
 	 * @method on_render
 	 * @since 0.1.0
 	 */
-	protected function on_render($template, array &$data) {
+	protected function on_render($template, array &$data)
+	{
 
 	}
 }
