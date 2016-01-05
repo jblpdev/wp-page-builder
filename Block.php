@@ -3,6 +3,7 @@ namespace WPPageBlock;
 
 use Timber;
 use TimberPost;
+use TimberHelper;
 
 class Block
 {
@@ -124,6 +125,8 @@ class Block
 		$context['block_buid'] = $this->infos['buid'];
 		$context['block_name'] = $this->infos['name'];
 		$context['block_description'] = $this->infos['description'];
+		$context['render_block_edit_link'] = TimberHelper::function_wrapper('render_block_edit_link');
+		$context['render_block_delete_link'] = TimberHelper::function_wrapper('render_block_delete_link');
 
 		Timber::render($template, $context);
 

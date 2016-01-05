@@ -593,3 +593,35 @@ function wpb_build($page_id = null)
 		wpb_block_render_template($block_buid, $block_page, $block_post, $block_id);
 	}
 }
+
+/**
+ * @function _wpb_render_block_edit_link
+ * @since 0.2.0
+ * @private
+ */
+function render_block_edit_link($block_buid, $block_post_id, $block_page_id, $block_id)
+{
+	if (wpb_block_is_editable($block_buid, $block_post_id)) {
+		$context = Timber::get_context();
+		$context['block_post_id'] = $block_post_id;
+		$context['block_page_id'] = $block_page_id;
+		$context['block_id'] = $block_id;
+		Timber::render('_block_edit_link.twig', $context);
+	}
+}
+
+/**
+ * @function _wpb_render_block_delete_link
+ * @since 0.2.0
+ * @private
+ */
+function render_block_delete_link($block_buid, $block_post_id, $block_page_id, $block_id)
+{
+	if (wpb_block_is_editable($block_buid, $block_post_id)) {
+		$context = Timber::get_context();
+		$context['block_post_id'] = $block_post_id;
+		$context['block_page_id'] = $block_page_id;
+		$context['block_id'] = $block_id;
+		Timber::render('_block_delete_link.twig', $context);
+	}
+}

@@ -1,8 +1,6 @@
-{% if function('wpb_block_is_editable', block_buid, page, block) %}
-	<div class="block-edit"><a href="{{ function('admin_url', 'post.php?&post=' ~ block.ID ~ '&action=edit&block_page=' ~ page.ID ~ '&block_id=' ~ block_id) }}" class="button">Edit</a></div>
-{% endif %}
-
 {% block preview %}
+
+	{{ render_block_edit_link(block_buib, post.id, block.id, block_id) }}
 
 	<div class="block-text">
 		<div class="block-name">{{ block_name }}</div>
