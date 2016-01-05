@@ -17,7 +17,7 @@ body {
 
 body.loaded {
 	display: block;
-	background: #fff;
+	background: #f1f1f1;
 }
 
 #adminmenumain {

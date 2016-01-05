@@ -26,7 +26,6 @@ $(document).ready(function() {
 		var hideBlockEditModal = function() {
 			$('.block-edit-modal').removeClass('block-edit-modal-visible')
 			$('.block-edit-modal iframe').attr('src', '')
-			console.log('Closing ' + currentBlockEditModal)
 			currentBlockEditModal = null
 		}
 

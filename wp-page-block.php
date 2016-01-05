@@ -1,6 +1,6 @@
 <?php
 /*
-Plugin Name: JBLP Page Builder
+Plugin Name: JBLP Page Blocks
 Plugin URI: http://jblp.ca
 Description: Creates pages from multiple blocks.
 Version: 1.0
@@ -17,7 +17,7 @@ define('WPB_FILE', __FILE__);
 define('WPB_DIR', plugin_dir_path(WPB_FILE));
 define('WPB_URL', plugins_url('/', WPB_FILE));
 
-require_once WP_CONTENT_DIR . '/plugins/wp-page-builder/Block.php';
+require_once WP_CONTENT_DIR . '/plugins/wp-page-block/Block.php';
 
 Timber::$locations = array(WPB_DIR . 'templates/');
 
@@ -69,7 +69,7 @@ register_post_type('block', array(
 add_action('admin_init', function() {
 
 	/**
-	 * Page block list editor.
+	 * Adds the block list metabox on the page. This metabox is hidden.
 	 * @since 0.1.0
 	 */
 	add_meta_box('wpb_block_list', 'Blocks', function() {
@@ -78,7 +78,7 @@ add_action('admin_init', function() {
 		$block_template_paths = wpb_block_template_paths();
 
 		$filter = function($page_block) {
-			return wpb_block_template_by_type($page_block['block_template']);
+			return wpb_block_template_by_buid($page_block['block_template']);
 		};
 
 		$page_blocks = get_post_meta(get_the_id(), '_page_blocks', true);
@@ -96,7 +96,7 @@ add_action('admin_init', function() {
 	}, 'page', 'normal', 'high');
 
 	/**
-	 * Page block list editor styles.
+	 * Styles the previous meta box.
 	 * @since 0.1.0
 	 */
 	add_filter('postbox_classes_page_wpb_block_list', function($classes = array()){
@@ -106,7 +106,8 @@ add_action('admin_init', function() {
 	});
 
 	/**
-	 * Page block fields.
+	 * Adds a metabox on the block edit page used to store the block id and page
+	 * it was added to. This metabox is hidden.
 	 * @since 0.1.0
 	 */
 	add_meta_box('wpb_block_edit', 'Page', function() {
@@ -116,18 +117,10 @@ add_action('admin_init', function() {
 		$data['block_page'] = $_REQUEST['block_page'];
 		Timber::render('block-edit.twig', $data);
 
-		if ($block_saved) {
-			?>
-			<script type="text/javascript">
-				alert('WAT');
-			</script>
-			<?php
-		}
-
 	}, 'block', 'normal', 'high');
 
 	/**
-	 * Page block fields.
+	 * Styles the previous meta box.
 	 * @since 0.1.0
 	 */
 	add_filter('postbox_classes_block_wpb_block_edit', function($classes = array()) {
@@ -139,6 +132,7 @@ add_action('admin_init', function() {
 });
 
 /**
+ * Adds the required CSS and JavaScript to the admin page.
  * @action admin_enqueue_scripts
  * @since 0.1.0
  */
@@ -156,6 +150,7 @@ add_action('admin_enqueue_scripts', function() {
 });
 
 /**
+ * Moves the submit div to the bottom of the block post type page.
  * @action add_meta_boxes_block
  * @since 0.1.0
  */
@@ -165,6 +160,7 @@ add_action('add_meta_boxes_block', function() {
 }, 0, 1);
 
 /**
+ * Renames the "Publish" button to a "Save" button on the block post type page.
  * @filter gettext
  * @since 0.1.0
  */
@@ -183,6 +179,7 @@ add_filter('gettext', function($translation, $text) {
 //------------------------------------------------------------------------------
 
 /**
+ * Saves the block that were added / removed on a page.
  * @action save_post
  * @since 0.1.0
  */
@@ -222,6 +219,8 @@ add_action('delete_post', function($post_id) {
 }, 10);
 
 /**
+ * Adds a special keyword in the block post type page url that closes the page
+ * when the page is saved and redirected.
  * @filter redirect_post_location
  * @since 0.1.0
  */
@@ -237,11 +236,30 @@ add_filter('redirect_post_location', function($location, $post_id) {
 
 }, 10, 2);
 
+/**
+ * Hides the page content and displays block instead.
+ * @filter the_content
+ * @since 0.1.0
+ */
+add_filter('the_content', function($content) {
+
+	if (get_post_type() == 'page' && wpb_page_has_blocks()) {
+		ob_start();
+		wpb_build();
+		$content = ob_get_contents();
+		ob_end_clean();
+	}
+
+	return $content;
+
+}, 20);
+
 //------------------------------------------------------------------------------
 // AJAX Block Management
 //------------------------------------------------------------------------------
 
 /**
+ * Adds a block to a page.
  * @action wp_ajax_add_page_block
  * @since 0.1.0
  */
@@ -250,7 +268,7 @@ add_action('wp_ajax_add_page_block', function() {
 	$block_page = $_POST['block_page'];
 	$block_template = $_POST['block_template'];
 
-	if (wpb_block_template_by_type($block_template) == null) {
+	if (wpb_block_template_by_buid($block_template) == null) {
 		return;
 	}
 
@@ -288,6 +306,7 @@ add_action('wp_ajax_add_page_block', function() {
 });
 
 /**
+ * Removes a block from a page.
  * @action wp_ajax_remove_page_block
  * @since 0.1.0
  */
@@ -338,7 +357,7 @@ add_filter('acf/get_field_groups', function($field_groups) {
 
 	if ($page_blocks) foreach ($page_blocks as $page_block) {
 
-		$block_template = wpb_block_template_by_type($page_block['block_template']);
+		$block_template = wpb_block_template_by_buid($page_block['block_template']);
 		if ($block_template == null) {
 			continue;
 		}
@@ -380,6 +399,7 @@ function wpb_read_json($file)
 }
 
 /**
+ * Returns an array that contains data about all available templates.
  * @function wpb_block_template_infos
  * @since 0.1.0
  */
@@ -394,7 +414,7 @@ function wpb_block_template_infos()
 			$type = str_replace(WP_CONTENT_DIR, '', $path);
 
 			$data = wpb_read_json($path . '/block.json');
-			$data['type'] = $type;
+			$data['buid'] = $type;
 			$data['path'] = $path;
 
 			$block_template_infos[] = $data;
@@ -405,19 +425,22 @@ function wpb_block_template_infos()
 }
 
 /**
+ * Returns an array that contains all templates path.
  * @function wpb_block_template_paths
  * @since 0.1.0
  */
 function wpb_block_template_paths()
 {
-	return apply_filters('wpb/block_template_paths', array(get_template_directory() . '/blocks'));
+	return apply_filters('wpb/block_template_paths', array(dirname(__FILE__) . '/blocks', get_template_directory() . '/blocks'));
 }
 
 /**
- * @function wpb_block_template_by_type
+ * Returns the block template data using a block unique identifier. This
+ * identifier is made from the block path relative to the app directory.
+ * @function wpb_block_template_by_buid
  * @since 0.1.0
  */
-function wpb_block_template_by_type($block_template)
+function wpb_block_template_by_buid($block_template)
 {
 	static $block_template_infos = null;
 
@@ -426,37 +449,49 @@ function wpb_block_template_by_type($block_template)
 	}
 
 	foreach ($block_template_infos as $block_template_info) {
-		if ($block_template_info['type'] == $block_template) return $block_template_info;
+		if ($block_template_info['buid'] == $block_template) return $block_template_info;
 	}
 
 	return null;
 }
 
 /**
+ * Returns the block name from the block configs.
  * @function wpb_block_name
- * @since 0.2.0
+ * @since 0.1.0
  */
-function wpb_block_name($block_template_type, $block_post)
+function wpb_block_name($block_template_buid)
 {
-	return wpb_block_instance($block_template_type)->name($block_post);
+	return wpb_block_instance($block_template_buid)->name();
 }
 
 /**
+ * Returns the block descript from the block configs.
  * @function wpb_block_description
- * @since 0.2.0
+ * @since 0.1.0
  */
-function wpb_block_description($block_template_type, $block_post)
+function wpb_block_description($block_template_buid)
 {
-	return wpb_block_instance($block_template_type)->description($block_post);
+	return wpb_block_instance($block_template_buid)->description();
+}
+
+/**
+ * Returns the block preview for a specific page within the admin.
+ * @function wpb_block_preview
+ * @since 0.1.0
+ */
+function wpb_block_preview($block_template_buid, $block_post)
+{
+	return wpb_block_instance($block_template_buid)->preview($block_post);
 }
 
 /**
  * @function wpb_block_overview
- * @since 0.2.0
+ * @since 0.1.0
  */
-function wpb_block_overview($block_template_type)
+function wpb_block_overview($block_template_buid)
 {
-	$block_template = wpb_block_template_by_type($block_template_type);
+	$block_template = wpb_block_template_by_buid($block_template_buid);
 	if ($block_template == null) {
 		return;
 	}
@@ -468,15 +503,15 @@ function wpb_block_overview($block_template_type)
  * @function wpb_block_instance
  * @since 0.1.0
  */
-function wpb_block_instance($block_template_type)
+function wpb_block_instance($block_template_buid)
 {
 	static $instances = array();
 
-	$block_instance = isset($instances[$block_template_type]) ? $instances[$block_template_type] : null;
+	$block_instance = isset($instances[$block_template_buid]) ? $instances[$block_template_buid] : null;
 
 	if ($block_instance == null) {
 
-		$block_template = wpb_block_template_by_type($block_template_type);
+		$block_template = wpb_block_template_by_buid($block_template_buid);
 
 		if ($block_template == null) {
 			return null;
@@ -493,10 +528,25 @@ function wpb_block_instance($block_template_type)
 			$block_instance = new WPPageBuilder\Block\Block($block_template);
 		}
 
-		$instances[$block_template_type] = $block_instance;
+		$instances[$block_template_buid] = $block_instance;
 	}
 
 	return $block_instance;
+}
+
+/**
+ * @function wpb_page_has_blocks
+ * @since 0.1.0
+ */
+function wpb_page_has_blocks($page_id = null)
+{
+	global $post;
+
+	$page = get_post($page_id);
+
+	$page_blocks = get_post_meta($page->ID, '_page_blocks', true);
+
+	return $page_blocks && count($page_blocks);
 }
 
 /**

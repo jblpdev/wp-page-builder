@@ -30,23 +30,33 @@ class Block
 	}
 
 	/**
-	 * Renders the block.
-	 * @method render
-	 * @since 0.2.0
+	 * Returns the block name.
+	 * @method name
+	 * @since 0.1.0
 	 */
-	public function name($block_post)
+	public function name()
 	{
 		return $this->infos['name'];
 	}
 
 	/**
-	 * Renders the block.
+	 * Returns the block description.
 	 * @method description
-	 * @since 0.2.0
+	 * @since 0.1.0
 	 */
-	public function description($block_post)
+	public function description()
 	{
 		return $this->infos['description'];
+	}
+
+	/**
+	 * Returns the block preview from within the admin.
+	 * @method preview
+	 * @since 0.1.0
+	 */
+	public function preview($block_post)
+	{
+
 	}
 
 	/**
@@ -54,16 +64,31 @@ class Block
 	 * @method render
 	 * @since 0.1.0
 	 */
-	public function render($block_post, $block_page) {
+	public function render($block_post, $block_page)
+	{
+		$this->render_template($this->infos['template_file'], array(
+			'page'  => new TimberPost($block_page),
+			'block' => new TimberPost($block_post)
+		));
+	}
 
-		$data = Timber::get_context();
-		$data['page'] = new TimberPost($block_page);
-		$data['block'] = new TimberPost($block_post);
+	/**
+	 * Renders a specific template.
+	 * @method render
+	 * @since 0.1.0
+	 */
+	public function render_template($template, array $data = array())
+	{
+		$context = Timber::get_context();
 
-		$this->on_render($data);
+		foreach ($data as $key => $val) {
+			$context[$key] = $val;
+		}
+
+		$this->on_render($template, $data);
 
 		Timber::$locations = array($this->infos['path']);
-		Timber::render($this->infos['template_file'], $data);
+		Timber::render($template, $context);
 	}
 
 	//--------------------------------------------------------------------------
@@ -75,7 +100,7 @@ class Block
 	 * @method on_render
 	 * @since 0.1.0
 	 */
-	protected function on_render(array &$data) {
+	protected function on_render($template, array &$data) {
 
 	}
 }
