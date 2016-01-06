@@ -1,13 +1,12 @@
-{% block preview %}
+<input type="hidden" name="_page_blocks[]" value="{{post_id}}">
 
-	{{ render_block_edit_link(block_buib, post.id, block.id, block_id) }}
+{{ wpb_block_edit_link() }}
 
-	<div class="block-text">
-		<div class="block-name">{{ block_name }}</div>
-		<div class="block-description">{{ block_description }}</div>
-		<div class="block-preview">
-
-		</div>
+<div class="block-info" data-post-id="{{post_id}}" data-page-id="{{page_id}}">
+	<div class="block-name">{{ block_name }}</div>
+	<div class="block-description">{{ block_description }}</div>
+	<div class="block-preview">
+		{% block preview %}{% endblock %}
 	</div>
+</div>
 
-{% endblock %}

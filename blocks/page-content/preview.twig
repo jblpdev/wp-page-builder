@@ -1,15 +1,7 @@
 {% extends "block-preview-base.twig" %}
 
 {% block preview %}
-
-	<div class="block-text">
-		<div class="block-name">{{ block_name }}</div>
-		<div class="block-description">{{ block_description }}</div>
-		<div class="block-preview">
-			{{ page.get_preview(40, false, false) }}
-		</div>
-	</div>
-
+	{{ page.get_preview(40, false, false) }}
 {% endblock %}
 
 

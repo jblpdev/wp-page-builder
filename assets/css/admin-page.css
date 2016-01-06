@@ -29,7 +29,7 @@
 	width: auto;
 }
 
-.block-text {
+.block-info {
 	overflow: hidden;
 	padding: 10px;
 }
@@ -167,25 +167,39 @@
 }
 
 /* ==========================================================================
-   Block Layout
+  Outline
    ========================================================================== */
 
-.layout-zone {
+.outline {
 	color: rgba(0, 0, 0, 0.5);
 	display: flex;
-	align-items: center;
-	justify-content: center;
 	padding: 10px;
 }
 
-.layout-zone-1 {
-	background: #f7fcfd;
-	flex: 1 0 0;
+.outline.outline-row {
+	flex-direction: row;
+	height: 100%;
+	width: 100%;
 }
 
-.layout-zone-2 {
-	background: #f2f7f9;
+.outline.outline-col {
+	flex-direction: column;
+	height: 100%;
+	width: 100%;
+}
+
+.outline-zone-1 {
+	background: #f7fcfd;
+	align-items: center;
 	flex: 1 0 0;
+	justify-content: center;
+}
+
+.outline-zone-2 {
+	background: #f2f7f9;
+	align-items: center;
+	flex: 1 0 0;
+	justify-content: center;
 }
 
 /* ==========================================================================
