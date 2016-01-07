@@ -8,9 +8,19 @@ class Block
 	// Static
 	//--------------------------------------------------------------------------
 
+	/**
+	 * @field current;
+	 * @since 0.3.0
+	 * @private
+	 */
 	private static $current = null;
 
-	public static function get_current() {
+	/**
+	 * Return the block being rendered.
+	 * @since 0.3.0
+	 */
+	public static function get_current()
+	{
 		return Block::$current;
 	}
 
@@ -154,7 +164,7 @@ class Block
 	}
 
 	/**
-	 * Renders teh block template.
+	 * Renders the block template.
 	 * @method render_template
 	 * @since 0.1.0
 	 */
@@ -177,7 +187,7 @@ class Block
 
 		$locations = Timber::$locations;
 
-		Timber::$locations = array_merge(Timber::$locations , $this->get_render_location());
+		Timber::$locations = array_merge($this->get_render_location(), Timber::$locations);
 
 		$context['block_buid'] = $this->infos['buid'];
 		$context['block_name'] = $this->infos['name'];

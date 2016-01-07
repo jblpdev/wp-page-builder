@@ -74,7 +74,26 @@ add_action('admin_init', function() {
 	 * @since 0.1.0
 	 */
 	add_meta_box('wpb_block_list', 'Blocks', function() {
-		wpb_admin_render_block_list_form();
+
+		$block_template_infos = wpb_block_template_infos();
+		$block_template_paths = wpb_block_template_paths();
+
+		$filter = function($page_block) {
+			return wpb_block_template_by_buid($page_block['buid']);
+		};
+
+		$page_blocks = get_post_meta(get_the_id(), '_page_blocks', true);
+
+		if ($page_blocks) {
+			$page_blocks = array_filter($page_blocks, $filter);
+		}
+
+		$data = Timber::get_context();
+		$data['page_blocks'] = $page_blocks;
+		$data['block_template_infos'] = $block_template_infos;
+		$data['block_template_paths'] = $block_template_paths;
+		Timber::render('block-list.twig', $data);
+
 	}, 'page', 'normal', 'high');
 
 	/**
@@ -83,7 +102,12 @@ add_action('admin_init', function() {
 	 * @since 0.1.0
 	 */
 	add_meta_box('wpb_block_edit', 'Page', function() {
-		wpb_admin_render_block_edit_form();
+
+		$data = Timber::get_context();
+		$data['post_id'] = $_REQUEST['post_id'];
+		$data['page_id'] = $_REQUEST['page_id'];
+		Timber::render('block-edit.twig', $data);
+
 	}, 'block', 'normal', 'high');
 
 	/**
@@ -165,29 +189,22 @@ add_action('save_post', function($post_id, $post) {
 	if (get_post_type() == 'page' && isset($_POST['_page_blocks']) && is_array($_POST['_page_blocks'])) {
 
 		$page_blocks = $_POST['_page_blocks'];
-		$page_blocks_old = get_post_meta($post_id, '_page_blocks', true);
+		$page_blocks_old = get_post_meta(get_the_id(), '_page_blocks', true);
 		$page_blocks_new = array();
 
-		foreach ($page_blocks as $block_post_id) {
+		foreach ($page_blocks as $post_id) {
 			foreach ($page_blocks_old as $page_block_old) {
-				if ($page_block_old['block_post_id'] == $block_post_id) $page_blocks_new[] = $page_block_old;
+				if ($page_block_old['post_id'] == $post_id) $page_blocks_new[] = $page_block_old;
 			}
 		}
 
-		update_post_meta($post_id, '_page_blocks', $page_blocks_new);
+		update_post_meta(get_the_id(), '_page_blocks', $page_blocks_new);
+
 	}
 
 	return $post_id;
 
 }, 10, 2);
-
-/**
- * @action delete_post
- * @since 0.1.0
- */
-add_action('delete_post', function($post_id) {
-
-}, 10);
 
 /**
  * Adds a special keyword in the block post type page url that closes the page
@@ -199,7 +216,7 @@ add_filter('redirect_post_location', function($location, $post_id) {
 
 	switch (get_post_type()) {
 		case 'block':
-			$location = $location . sprintf('&block_post_id=%s&block_page_id=%s#block_saved', $_REQUEST['block_post_id'], $_REQUEST['block_page_id']);
+			$location = $location . sprintf('&post_id=%s&page_id=%s#block_saved', $_REQUEST['post_id'], $_REQUEST['page_id']);
 			break;
 	}
 
@@ -216,6 +233,10 @@ add_filter('the_content', function($content) {
 
 	global $post;
 
+	if (is_admin()) {
+		return $content;
+	}
+
 	if (get_post_type() == 'page') {
 
 		$page_blocks = get_post_meta($post->ID, '_page_blocks', true);
@@ -226,21 +247,17 @@ add_filter('the_content', function($content) {
 
 			foreach ($page_blocks as $page_block) {
 
-				if (!isset($page_block['block_buid']) ||
-					!isset($page_block['block_page_id']) ||
-					!isset($page_block['block_post_id'])) {
+				if (!isset($page_block['buid']) ||
+					!isset($page_block['page_id']) ||
+					!isset($page_block['post_id'])) {
 					continue;
 				}
 
-				if ($page_block['block_into_id'] == 0) {
-
-					wpb_block_render_template(
-						$page_block['block_buid'],
-						$page_block['block_post_id'],
-						$page_block['block_page_id']
-					);
-
-				}
+				if ($page_block['into_id'] == 0) wpb_block_render_template(
+					$page_block['buid'],
+					$page_block['post_id'],
+					$page_block['page_id']
+				);
 			}
 
 			$content = ob_get_contents();
@@ -264,43 +281,41 @@ add_filter('the_content', function($content) {
  */
 add_action('wp_ajax_add_page_block', function() {
 
-	$block_buid = $_POST['buid'];
-	$block_page_id = $_POST['page_id'];
-	$block_into_id = $_POST['into_id'];
-	$block_area_id = $_POST['area_id'];
+	$buid = $_POST['buid'];
+	$page_id = $_POST['page_id'];
+	$into_id = $_POST['into_id'];
+	$area_id = $_POST['area_id'];
 
-	if (wpb_block_template_by_buid($block_buid) == null) {
+	if (wpb_block_template_by_buid($buid) == null) {
 		return;
 	}
 
-	$block_post_id = wp_insert_post(array(
-		'post_parent'  => $block_page_id,
+	$post_id = wp_insert_post(array(
+		'post_parent'  => $page_id,
 		'post_type'    => 'block',
-		'post_title'   => sprintf('Page %s : Block %s', $block_page_id, $block_buid),
+		'post_title'   => sprintf('Page %s : Block %s', $page_id, $buid),
 		'post_content' => '',
 		'post_status'  => 'publish',
 	));
 
-	$page_blocks = get_post_meta($block_page_id, '_page_blocks', true);
+	$page_blocks = get_post_meta($page_id, '_page_blocks', true);
 	if ($page_blocks == null) {
 		$page_blocks = array();
 	}
 
 	$page_block = array(
-		'block_buid' => $block_buid,
-		'block_post_id' => $block_post_id,
-		'block_page_id' => $block_page_id,
-		'block_into_id' => $block_into_id,
-		'block_area_id' => $block_area_id,
+		'buid' => $buid,
+		'area_id' => $area_id,
+		'post_id' => (int) $post_id,
+		'page_id' => (int) $page_id,
+		'into_id' => (int) $into_id,
 	);
 
 	$page_blocks[] = $page_block;
 
-	update_post_meta($block_page_id, '_page_blocks', $page_blocks);
+	update_post_meta($page_id, '_page_blocks', $page_blocks);
 
-	echo '<li class="block clearfix">';
-	wpb_block_render_preview($block_buid, $block_post_id, $block_page_id);
-	echo '</li>';
+	wpb_block_render_preview($buid, $post_id, $page_id);
 });
 
 /**
@@ -308,8 +323,11 @@ add_action('wp_ajax_add_page_block', function() {
  * @action wp_ajax_remove_page_block
  * @since 0.1.0
  */
-add_action('wp_ajax_remove_page_block', function($block_post_id) {
+add_action('wp_ajax_remove_page_block', function($post_id) {
 
+	$page_id = $_POST['page_id'];
+	$post_id = $_POST['post_id'];
+	// TODO: Complete
 });
 
 //------------------------------------------------------------------------------
@@ -333,7 +351,6 @@ add_filter('acf/settings/load_json', function($paths) {
 	}
 
 	return $paths;
-
 });
 
 /**
@@ -346,16 +363,16 @@ add_filter('acf/get_field_groups', function($field_groups) {
 		return;
 	}
 
-	$block_post_id = $_GET['block_post_id'];
-	$block_page_id = $_GET['block_page_id'];
+	$post_id = $_GET['post_id'];
+	$page_id = $_GET['page_id'];
 
-	$page_blocks = array_filter(get_post_meta($block_page_id, '_page_blocks', true), function($page_block) use($block_post_id) {
-		return $page_block['block_post_id'] == $block_post_id;
+	$page_blocks = array_filter(get_post_meta($page_id, '_page_blocks', true), function($page_block) use($post_id) {
+		return $page_block['post_id'] == $post_id;
 	});
 
 	if ($page_blocks) foreach ($page_blocks as $page_block) {
 
-		$block_template = wpb_block_template_by_buid($page_block['block_buid']);
+		$block_template = wpb_block_template_by_buid($page_block['buid']);
 		if ($block_template == null) {
 			continue;
 		}

@@ -3,17 +3,11 @@
 <div class="button block-picker-modal-show">Add block</div>
 
 <ul class="blocks">
-
 	{% for page_block in page_blocks %}
-
-		<li class="block clearfix">
-
-			{{ wpb_block_render_preview(page_block.block_buid, page_block.block_post_id, page_block.block_page_id) }}
-
-		</li>
-
+		{% if page_block.into_id == "0" %}
+			{{ wpb_block_render_preview(page_block.buid, page_block.post_id, page_block.page_id) }}
+		{% endif %}
 	{% endfor %}
-
 </ul>
 
 <div class="block-picker-modal">

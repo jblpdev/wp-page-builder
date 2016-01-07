@@ -7,35 +7,32 @@ $(document).ready(function() {
 
 	$('.wp-admin.post-type-page').each(function(i, element) {
 
-		var currentModal = null
-		var currentModalParentAreaId = null
-		var currentModalParentPostId = null
-		var currentModalParentPageId = null
+		var blockPickerAreaId = null
+		var blockPickerPostId = null
+		var blockPickerPageId = null
 
-		var showBlockPickerModal = function() {
-			currentModalParentAreaId = $(this).closest('.block').attr('data-area-id') || 0
-			currentModalParentPostId = $(this).closest('.block').attr('data-post-id') || 0
-			currentModalParentPageId = $(this).closest('.block').attr('data-page-id') || 0
+		var showBlockPicker = function() {
+			blockPickerAreaId = $(this).attr('data-area-id') || 0
+			blockPickerPostId = $(this).closest('[data-post-id]').attr('data-post-id') || 0
+			blockPickerPageId = $(this).closest('[data-page-id]').attr('data-page-id') || 0
 			$('.block-picker-modal').addClass('block-picker-modal-visible')
 		}
 
-		var hideBlockPickerModal = function() {
+		var hideBlockPicker = function() {
 			$('.block-picker-modal').removeClass('block-picker-modal-visible')
 		}
 
-		var showBlockEditModal = function(url, source) {
-			currentModal = source
+		var showBlockEditor = function(url, source) {
 			$('.block-edit-modal').addClass('block-edit-modal-visible')
 			$('.block-edit-modal iframe').attr('src', url)
 		}
 
-		var hideBlockEditModal = function() {
+		var hideBlockEditor = function() {
 			$('.block-edit-modal').removeClass('block-edit-modal-visible')
 			$('.block-edit-modal iframe').attr('src', '')
-			currentModal = null
 		}
 
-		var appendBlock = function(buid) {
+		var appendBlock = function(blocks, buid) {
 
 			var pageId = $('#post_ID').val()
 			if (pageId == null)  {
@@ -46,10 +43,10 @@ $(document).ready(function() {
 				'action': 'add_page_block',
 				'buid': buid,
 				'page_id': pageId,
-				'into_id': currentModalParentPostId,
-				'area_id': currentModalParentAreaId,
+				'into_id': blockPickerPostId,
+				'area_id': blockPickerAreaId,
 			}, function(result) {
-				$('.blocks').append(setupBlock(result))
+				blocks.append(setupBlock(result))
 			})
 		}
 
@@ -61,36 +58,40 @@ $(document).ready(function() {
 				e.preventDefault()
 				e.stopPropagation()
 
-				showBlockEditModal($(this).attr('href'), $(this).closest('.block').attr('data-post-id'))
+				showBlockEditor($(this).attr('href'), $(this).closest('.block').attr('data-post-id'))
 			})
+
+			block.sortable()
+			block.disableSelection()
 
 			return block
 		}
 
-		$('.blocks').disableSelection();
-		$('.blocks').sortable()
 		$('.blocks').each(function(i, element) {
 			setupBlock(element)
 		})
 
-		$('.block-picker-modal-show').on('click', showBlockPickerModal)
-		$('.block-picker-modal-hide').on('click', hideBlockPickerModal)
-		$('.block-edit-modal-hide').on('click', hideBlockEditModal)
+		$('.block-picker-modal-show').on('click', showBlockPicker)
+		$('.block-picker-modal-hide').on('click', hideBlockPicker)
+		$('.block-edit-modal-hide').on('click', hideBlockEditor)
 
 		$('.block-template-info-action .button-insert').on('click', function() {
 
 			var buid = $(this).closest('.block-template-info').attr('data-buid')
 			if (buid == null) {
-				hideBlockPickerModal()
+				hideBlockPicker()
 				return
 			}
 
-			appendBlock(buid)
+			var blocks = $('.blocks[data-area-id="' + blockPickerAreaId + '"]')
+			if (blocks.length == 0) {
+				blocks = $('.blocks')
+			}
 
-			hideBlockPickerModal()
+			appendBlock(blocks, buid)
+
+			hideBlockPicker()
 		})
-
-		window.wpbHideBlockEditModal = hideBlockEditModal
 	})
 })
 
