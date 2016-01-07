@@ -70,11 +70,11 @@
 	padding: 15px;
 }
 
-.block-content-updating {
+.block-content.block-content-updating {
 	opacity: 0.25;
 }
 
-.block-content-updating .block-content-loading {
+.block-content.block-content-updating .block-content-loading {
 	display: block;
 }
 
@@ -94,6 +94,17 @@
 	position: absolute;
 	top: 50%;
 	visibility: visible;
+}
+
+#poststuff .block-content-preview h1,
+#poststuff .block-content-preview h2,
+#poststuff .block-content-preview h3,
+#poststuff .block-content-preview h4 {
+	padding: 0px;
+}
+
+#poststuff .block-content-preview p:last-child {
+	margin: 0px;
 }
 
 .ui-sortable-placeholder {
