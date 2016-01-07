@@ -1,9 +1,9 @@
 {
-    "key": "group_566720a0bee85",
-    "title": "Carousel Template",
+    "key": "group_568e902104d75",
+    "title": "Text Content",
     "fields": [
         {
-            "key": "field_566720a7d826b",
+            "key": "field_568e9039cdef5",
             "label": "Title",
             "name": "title",
             "type": "text",
@@ -24,9 +24,27 @@
             "disabled": 0
         },
         {
-            "key": "field_566734882c2ba",
-            "label": "Description",
-            "name": "description",
+            "key": "field_568e9047cdef6",
+            "label": "Content",
+            "name": "content",
+            "type": "wysiwyg",
+            "instructions": "",
+            "required": 0,
+            "conditional_logic": 0,
+            "wrapper": {
+                "width": "",
+                "class": "",
+                "id": ""
+            },
+            "default_value": "",
+            "tabs": "all",
+            "toolbar": "full",
+            "media_upload": 1
+        },
+        {
+            "key": "field_568e905bcdef7",
+            "label": "Excerpt",
+            "name": "excerpt",
             "type": "textarea",
             "instructions": "",
             "required": 0,
@@ -37,12 +55,12 @@
                 "id": ""
             },
             "default_value": "",
-            "new_lines": "",
-            "maxlength": "",
             "placeholder": "",
+            "maxlength": "",
+            "rows": "",
+            "new_lines": "wpautop",
             "readonly": 0,
-            "disabled": 0,
-            "rows": ""
+            "disabled": 0
         }
     ],
     "location": [
@@ -56,11 +74,11 @@
     ],
     "menu_order": 0,
     "position": "normal",
-    "style": "default",
+    "style": "seamless",
     "label_placement": "top",
     "instruction_placement": "label",
     "hide_on_screen": "",
     "active": 1,
     "description": "",
-    "modified": 1449604240
+    "modified": 1452183687
 }

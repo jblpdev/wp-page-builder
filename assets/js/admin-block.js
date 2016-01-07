@@ -5,8 +5,19 @@
 
 $(document).ready(function() {
 
+	var vars = {}
+	window.location.href.replace(/[?&]+([^=&]+)=([^&]*)/gi, function(m, key, value) {
+		vars[key] = value;
+	})
+
 	if (window.location.hash == '#block_saved') {
-		window.top.wpbHideBlockEditModal()
+
+    	var post = vars['post']
+    	if (post) {
+    		window.top.wpbRefreshBlock(post)
+    	}
+
+		window.top.wpbHideBlockEditor()
 	}
 
 	$('#publish').on('click', function() {

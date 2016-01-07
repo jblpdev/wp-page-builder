@@ -1,8 +1,7 @@
 {% extends "block-preview-base.twig" %}
-
 {% block preview %}
-	<div class="outline outline-row">
-		<div class="outline-zone-1">{{ wpb_block_area('side_column') }}</div>
-		<div class="outline-zone-2">{{ wpb_block_area('main_column') }}</div>
+	<div class="row">
+		<div class="col-md-4">{{ wpb_block_area('side_column') }}</div>
+		<div class="col-md-8">{{ wpb_block_area('main_column') }}</div>
 	</div>
 {% endblock %}

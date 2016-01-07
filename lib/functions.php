@@ -108,10 +108,10 @@ function wpb_block_edit_link()
 }
 
 /**
- * @function wpb_block_delete_link
+ * @function wpb_block_remove_link
  * @since 0.3.0
  */
-function wpb_block_delete_link()
+function wpb_block_remove_link()
 {
 	$block = Block::get_current();
 	if ($block == null) {
@@ -122,7 +122,7 @@ function wpb_block_delete_link()
 		$context = Timber::get_context();
 		$context['post_id'] = $block->get_post_id();
 		$context['page_id'] = $block->get_page_id();
-		Timber::render('block-delete-link.twig', $context);
+		Timber::render('block-remove-link.twig', $context);
 	}
 }
 
@@ -210,7 +210,7 @@ function wpb_block_render_children($area_id)
 //------------------------------------------------------------------------------
 
 TimberHelper::function_wrapper('wpb_block_edit_link');
-TimberHelper::function_wrapper('wpb_block_delete_link');
+TimberHelper::function_wrapper('wpb_block_remove_link');
 TimberHelper::function_wrapper('wpb_block_render_outline');
 TimberHelper::function_wrapper('wpb_block_render_preview');
 TimberHelper::function_wrapper('wpb_block_render_template');

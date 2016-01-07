@@ -1,13 +1,20 @@
-<li class="block clearfix">
+<li class="block" data-post-id="{{post_id}}" data-page-id="{{page_id}}">
 
 	<input type="hidden" name="_page_blocks[]" value="{{post_id}}">
 
-	{{ wpb_block_edit_link() }}
-
-	<div class="block-info" data-post-id="{{post_id}}" data-page-id="{{page_id}}">
+	<div class="block-bar clearfix">
 		<div class="block-name">{{ block_name }}</div>
-		<div class="block-description">{{ block_description }}</div>
-		<div class="block-preview">
+		<div class="block-actions">
+			{{ wpb_block_remove_link() }}
+			{{ wpb_block_edit_link() }}
+		</div>
+	</div>
+
+	<div class="block-content">
+		<div class="block-content-loading">
+			<span class="spinner"></span>
+		</div>
+		<div class="block-content-preview">
 			{% block preview %}{% endblock %}
 		</div>
 	</div>

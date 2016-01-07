@@ -1,7 +1,5 @@
 <input type="hidden" name="_page_blocks_changed" value="false">
 
-<div class="button block-picker-modal-show">Add block</div>
-
 <ul class="blocks">
 	{% for page_block in page_blocks %}
 		{% if page_block.into_id == "0" %}
@@ -9,6 +7,8 @@
 		{% endif %}
 	{% endfor %}
 </ul>
+
+<div class="button block-picker-modal-show">Add block</div>
 
 <div class="block-picker-modal">
 	<div class="block-picker-modal-frame">

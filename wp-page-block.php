@@ -18,6 +18,7 @@ define('WPB_DIR', plugin_dir_path(WPB_FILE));
 define('WPB_URL', plugins_url('/', WPB_FILE));
 
 require_once WP_CONTENT_DIR . '/plugins/wp-page-block/Block.php';
+require_once WP_CONTENT_DIR . '/plugins/wp-page-block/Layout.php';
 require_once WP_CONTENT_DIR . '/plugins/wp-page-block/lib/functions.php';
 
 Timber::$locations = array(WPB_DIR . 'templates/');
@@ -142,6 +143,7 @@ add_action('admin_enqueue_scripts', function() {
 	if (get_post_type() == 'page') {
 		wp_enqueue_script('wpb_admin_render_block_list_form_js', WPB_URL . 'assets/js/admin-page.js', false, WPB_VERSION);
 		wp_enqueue_style('wpb_admin_render_block_list_form_css', WPB_URL . 'assets/css/admin-page.css', false, WPB_VERSION);
+		wp_enqueue_style('wpb_admin_render_block_list_grid_css', WPB_URL . 'assets/css/admin-grid.css', false, WPB_VERSION);
 	}
 
 	if (get_post_type() == 'block') {
@@ -167,8 +169,10 @@ add_action('add_meta_boxes_block', function() {
  */
 add_filter('gettext', function($translation, $text) {
 
-	if (get_post_type() == 'block' && $text == 'Publish') {
-		return 'Save';
+	if (get_post_type() == 'block') {
+		switch ($text) {
+			case 'Publish': return 'Save';
+		}
 	}
 
 	return $translation;
@@ -199,7 +203,6 @@ add_action('save_post', function($post_id, $post) {
 		}
 
 		update_post_meta(get_the_id(), '_page_blocks', $page_blocks_new);
-
 	}
 
 	return $post_id;
@@ -271,7 +274,7 @@ add_filter('the_content', function($content) {
 }, 20);
 
 //------------------------------------------------------------------------------
-// AJAX Block Management
+// AJAX
 //------------------------------------------------------------------------------
 
 /**
@@ -316,6 +319,7 @@ add_action('wp_ajax_add_page_block', function() {
 	update_post_meta($page_id, '_page_blocks', $page_blocks);
 
 	wpb_block_render_preview($buid, $post_id, $page_id);
+	exit;
 });
 
 /**
@@ -323,19 +327,31 @@ add_action('wp_ajax_add_page_block', function() {
  * @action wp_ajax_remove_page_block
  * @since 0.1.0
  */
-add_action('wp_ajax_remove_page_block', function($post_id) {
+add_action('wp_ajax_remove_page_block', function() {
 
-	$page_id = $_POST['page_id'];
 	$post_id = $_POST['post_id'];
-	// TODO: Complete
+	$page_id = $_POST['page_id'];
+
+	$page_blocks = get_post_meta($page_id, '_page_blocks', true);
+	if ($page_blocks == null) {
+		return;
+	}
+
+	$page_blocks = array_filter($page_blocks, function($page_block) use ($post_id) {
+		return $page_block['post_id'] != $post_id;
+	});
+
+	update_post_meta($page_id, '_page_blocks', $page_blocks);
+
+	wp_delete_post($post_id);
 });
 
 //------------------------------------------------------------------------------
-// ACF Filters
+// ACF
 //------------------------------------------------------------------------------
 
 /**
- * @filter acf/settings/load_json
+ * @filter acf/settings/load_jsonk
  * @since 0.1.0
  */
 add_filter('acf/settings/load_json', function($paths) {
@@ -363,7 +379,7 @@ add_filter('acf/get_field_groups', function($field_groups) {
 		return;
 	}
 
-	$post_id = $_GET['post_id'];
+	$post_id = $_GET['post'];
 	$page_id = $_GET['page_id'];
 
 	$page_blocks = array_filter(get_post_meta($page_id, '_page_blocks', true), function($page_block) use($post_id) {
